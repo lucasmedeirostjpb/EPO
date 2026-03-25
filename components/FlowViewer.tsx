@@ -10,10 +10,11 @@ import {
   NodeMouseHandler,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { AlignLeft, Info } from "lucide-react";
 
 import DiagramBackgroundNode, { DiagramBackgroundNodeType } from "./DiagramBackgroundNode";
 import HotspotNode, { HotspotNodeType } from "./HotspotNode";
-import { BizagiData } from "@/lib/bizagi-data";
+import type { Flow } from "@/lib/types";
 
 import {
   Sheet,
@@ -29,7 +30,11 @@ const nodeTypes = {
 
 type AppNode = DiagramBackgroundNodeType | HotspotNodeType;
 
-export default function FlowViewer() {
+interface FlowViewerProps {
+  flow: Flow;
+}
+
+export default function FlowViewer({ flow }: FlowViewerProps) {
   const [selectedNodeData, setSelectedNodeData] = useState<{
     name: string;
     description: string;
@@ -38,11 +43,18 @@ export default function FlowViewer() {
   const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
 
   useEffect(() => {
-    const page = BizagiData.pages && BizagiData.pages.length > 0 ? BizagiData.pages[0] : null; 
+    // Parse bizagi_data from the flow
+    const bizagiData = flow.bizagi_data as any;
+    if (!bizagiData) return;
+
+    const page = bizagiData.pages && bizagiData.pages.length > 0 ? bizagiData.pages[0] : null;
     if (!page) return;
 
-    const imageName = page.image.split("\\").pop() || page.image.split("/").pop();
-    const imageUrl = `/${imageName}`;
+    // Use svg_url from the flow record, or fall back to extracting from page.image
+    const imageUrl = flow.svg_url || (() => {
+      const imageName = (page.image || "").split("\\").pop() || (page.image || "").split("/").pop();
+      return `/${imageName}`;
+    })();
 
     // Extract hotspots
     const hotspots: AppNode[] = [];
@@ -80,16 +92,14 @@ export default function FlowViewer() {
     if ((page as any).pageElements) extractElements((page as any).pageElements);
 
     // Fetch SVG to read its exact native ViewBox coordinates and size
-    fetch(imageUrl)
+    fetch(imageUrl as string)
       .then(res => res.text())
       .then(text => {
-        let vx = 0, vy = 0, vw = 2000, vh = 1000;
+        let vw = 2000, vh = 1000;
         const match = text.match(/viewBox="([^"]+)"/);
         if (match) {
           const parts = match[1].split(',').map(s => parseFloat(s.trim()));
           if (parts.length === 4) {
-            vx = parts[0];
-            vy = parts[1];
             vw = parts[2];
             vh = parts[3];
           }
@@ -100,7 +110,7 @@ export default function FlowViewer() {
             id: "diagram-bg",
             type: "diagramBackground",
             position: { x: 0, y: 0 },
-            data: { imageUrl, width: vw, height: vh },
+            data: { imageUrl: imageUrl as string, width: vw, height: vh },
             draggable: false,
             selectable: false,
             zIndex: -1,
@@ -111,7 +121,7 @@ export default function FlowViewer() {
         setNodes(newNodes);
       })
       .catch(console.error);
-  }, [setNodes]);
+  }, [flow, setNodes]);
 
   const onNodeClick: NodeMouseHandler = useCallback((event, node) => {
     if (node.type === "hotspot" && node.data) {
@@ -123,7 +133,7 @@ export default function FlowViewer() {
   }, []);
 
   return (
-    <div className="w-full h-full bg-slate-50 dark:bg-slate-900">
+    <div className="w-full h-full bg-slate-50">
       <ReactFlow
         nodes={nodes}
         onNodesChange={onNodesChange}
@@ -135,25 +145,36 @@ export default function FlowViewer() {
       >
         <Background />
         <MiniMap />
-        <Controls />
+        <Controls className="pb-2" />
       </ReactFlow>
 
       <Sheet open={!!selectedNodeData} onOpenChange={(open) => !open && setSelectedNodeData(null)}>
-        <SheetContent className="sm:max-w-[600px] overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle className="text-2xl font-bold tracking-tight mb-4">
+        <SheetContent className="sm:max-w-[450px] overflow-y-auto bg-slate-950 border-l border-slate-800 text-slate-300">
+          <SheetHeader className="mb-6">
+            <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+              <Info className="w-4 h-4" /> Detalhes da Etapa
+            </h2>
+            <SheetTitle className="text-xl font-bold text-slate-100">
               {selectedNodeData?.name || "Sem título"}
             </SheetTitle>
           </SheetHeader>
-          <div className="mt-6 bg-white dark:bg-slate-950 p-4 rounded-md shadow-sm border">
-            {selectedNodeData?.description ? (
-              <div
-                className="text-foreground text-base leading-relaxed max-w-none break-words"
-                dangerouslySetInnerHTML={{ __html: selectedNodeData.description }}
-              />
-            ) : (
-              <p className="text-muted-foreground italic">Nenhuma descrição detalhada disponível para esta etapa.</p>
-            )}
+          
+          <div className="space-y-6">
+            {/* Description Section */}
+            <section className="space-y-3">
+              <div className="flex items-center gap-2 text-sm font-medium text-slate-400">
+                <AlignLeft className="w-4 h-4" />
+                Descrição
+              </div>
+              {selectedNodeData?.description ? (
+                <div
+                  className="text-sm leading-relaxed [&_*]:!text-slate-300 [&_span]:!text-slate-300 [&_p]:!text-slate-300 text-slate-300"
+                  dangerouslySetInnerHTML={{ __html: selectedNodeData.description }}
+                />
+              ) : (
+                <p className="text-sm text-slate-500 italic">Nenhuma descrição detalhada disponível.</p>
+              )}
+            </section>
           </div>
         </SheetContent>
       </Sheet>
