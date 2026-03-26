@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import FlowViewer from "@/components/FlowViewer";
-import { getFlowBySlug } from "@/lib/queries";
+import { getFlowByIdOrSlug } from "@/lib/queries";
 import type { Flow } from "@/lib/types";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -17,7 +17,7 @@ export default function FluxoPage() {
   useEffect(() => {
     async function loadFlow() {
       try {
-        const data = await getFlowBySlug(slug);
+        const data = await getFlowByIdOrSlug(slug);
         setFlow(data);
       } catch (err) {
         console.error("Error loading flow:", err);

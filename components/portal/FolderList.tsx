@@ -37,8 +37,13 @@ export default function FolderList({ node }: FolderListProps) {
   const groupedResults = collectAllFlows(node);
   const totalFlows = groupedResults.reduce((acc, group) => acc + group.flows.length, 0);
 
-  const openFlow = (slug: string) => {
-    window.open(`/fluxo/${slug}`, "_blank");
+  const openFlow = (flow: Flow) => {
+    // Usar slug se houver, senão usar o ID como fallback (ajustando a rota se necessário)
+    // Mas por enquanto, garantimos que não abra um link quebrado
+    const identifier = flow.slug || flow.id;
+    if (identifier) {
+      window.open(`/fluxo/${identifier}`, "_blank");
+    }
   };
 
   return (
@@ -83,7 +88,7 @@ export default function FolderList({ node }: FolderListProps) {
                 {group.flows.map((flow) => (
                   <button
                     key={flow.id}
-                    onClick={() => openFlow(flow.slug)}
+                    onClick={() => openFlow(flow)}
                     className="group relative bg-white rounded-2xl p-8 shadow-[0_4px_20px_rgba(13,31,53,0.05)] hover:shadow-[0_15px_45px_rgba(13,31,53,0.12)] border border-[#0d1f35]/5 transition-all duration-500 text-left flex flex-col justify-between overflow-hidden"
                   >
                     {/* Decorative Accent */}

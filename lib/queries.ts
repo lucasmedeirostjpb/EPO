@@ -43,14 +43,21 @@ export async function getFolderTree(): Promise<FolderTreeNode[]> {
 }
 
 /**
- * Fetches a single flow by its slug, including its full bizagi_data.
+ * Fetches a single flow by its ID or slug, including its full bizagi_data.
  */
-export async function getFlowBySlug(slug: string): Promise<Flow | null> {
-  const { data, error } = await supabase
-    .from("flows")
-    .select("*")
-    .eq("slug", slug)
-    .single();
+export async function getFlowByIdOrSlug(identifier: string): Promise<Flow | null> {
+  // Check if identifier is a UUID (very basic check)
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier);
+  
+  const query = supabase.from("flows").select("*");
+  
+  if (isUuid) {
+    query.eq("id", identifier);
+  } else {
+    query.eq("slug", identifier);
+  }
+
+  const { data, error } = await query.single();
 
   if (error) {
     console.error("Error fetching flow:", error);
