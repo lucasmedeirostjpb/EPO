@@ -9,7 +9,7 @@ import ImportFlowDialog from "@/components/ImportFlowDialog";
 import { getFolderTree, getFlowBySlug, getFolderBreadcrumb } from "@/lib/queries";
 import type { FolderTreeNode, Flow, Folder } from "@/lib/types";
 
-export default function Home() {
+export default function DashboardPage() {
   const [tree, setTree] = useState<FolderTreeNode[]>([]);
   const [selectedFlow, setSelectedFlow] = useState<Flow | null>(null);
   const [breadcrumbs, setBreadcrumbs] = useState<Folder[]>([]);
