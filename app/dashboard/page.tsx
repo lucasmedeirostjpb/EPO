@@ -6,7 +6,7 @@ import Sidebar from "@/components/Sidebar";
 import FlowViewer from "@/components/FlowViewer";
 import CreateFolderDialog from "@/components/CreateFolderDialog";
 import ImportFlowDialog from "@/components/ImportFlowDialog";
-import { getFolderTree, getFlowBySlug, getFolderBreadcrumb } from "@/lib/queries";
+import { getFolderTree, getFlowByIdOrSlug, getFolderBreadcrumb } from "@/lib/queries";
 import type { FolderTreeNode, Flow, Folder } from "@/lib/types";
 
 export default function DashboardPage() {
@@ -35,7 +35,7 @@ export default function DashboardPage() {
 
   // When a flow is selected from the sidebar, fetch its full data
   const handleSelectFlow = useCallback(async (flow: Flow) => {
-    const fullFlow = await getFlowBySlug(flow.slug);
+    const fullFlow = await getFlowByIdOrSlug(flow.slug);
     if (fullFlow) {
       setSelectedFlow(fullFlow);
       const crumbs = await getFolderBreadcrumb(fullFlow.folder_id);
