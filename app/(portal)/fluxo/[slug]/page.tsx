@@ -6,13 +6,14 @@ import FlowViewer from "@/components/FlowViewer";
 import { getFlowByIdOrSlug } from "@/lib/queries";
 import type { Flow } from "@/lib/types";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Copy, Check } from "lucide-react";
 
 export default function FluxoPage() {
   const params = useParams();
   const slug = params.slug as string;
   const [flow, setFlow] = useState<Flow | null>(null);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     async function loadFlow() {
@@ -57,8 +58,22 @@ export default function FluxoPage() {
           </Link>
           <h1 className="text-white font-bold text-lg">{flow.title}</h1>
         </div>
-        <div className="text-white/40 text-xs uppercase tracking-widest hidden sm:block">
-          Portal SISPOM • Escritório de Processos
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(`${window.location.origin}/embed/${slug}`);
+              setCopied(true);
+              setTimeout(() => setCopied(false), 2000);
+            }}
+            className="flex items-center gap-2 text-white/60 hover:text-white transition-colors px-3 py-1.5 rounded-md hover:bg-white/10 text-sm font-medium"
+            title="Copiar link para tela de diagrama"
+          >
+            {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+            <span className="hidden sm:inline">{copied ? "Copiado!" : "Copiar link do diagrama"}</span>
+          </button>
+          <div className="text-white/40 text-xs uppercase tracking-widest hidden sm:block border-l border-white/20 pl-4">
+            Portal SISPOM • Escritório de Processos
+          </div>
         </div>
       </header>
       <main className="flex-1 relative overflow-hidden">
