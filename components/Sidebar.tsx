@@ -125,7 +125,7 @@ function FolderItem({
   isAdmin: boolean;
   depth?: number;
 }) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [renaming, setRenaming] = useState(false);
   const [renamingFlowId, setRenamingFlowId] = useState<string | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
