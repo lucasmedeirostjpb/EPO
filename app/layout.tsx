@@ -18,6 +18,10 @@ const barlowCondensed = Barlow_Condensed({
 export const metadata: Metadata = {
   title: "EPO - Escritório de Processos do TJPB",
   description: "Escritório de Processos Organizacionais - Visualização e Gestão de Fluxos BPMN",
+  icons: {
+    icon: "/logo-epo.png",
+    apple: "/logo-epo.png",
+  },
 };
 
 export default function RootLayout({

@@ -196,23 +196,23 @@ export default function ImportFlowDialog({ open, onClose, tree, onCreated }: Imp
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/60" onClick={handleClose} />
-      <div className="relative bg-slate-900 border border-slate-800 rounded-lg p-6 w-full max-w-lg shadow-xl max-h-[80vh] flex flex-col">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-slate-100">Importar Fluxos (Bizagi)</h2>
-          <button onClick={handleClose} className="text-slate-500 hover:text-slate-300 transition-colors">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" onClick={handleClose} />
+      <div className="relative bg-white border border-black p-6 w-full max-w-lg shadow-none max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between mb-6 border-b border-black pb-4">
+          <h2 className="text-xl font-bold text-black uppercase tracking-tight">Importar Fluxos (Bizagi)</h2>
+          <button onClick={handleClose} className="text-black hover:bg-gray-100 p-1 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="space-y-4 flex-1 overflow-hidden flex flex-col">
+        <div className="space-y-6 flex-1 overflow-hidden flex flex-col">
           {error && (
-            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-md text-sm text-red-400">{error}</div>
+            <div className="p-3 bg-white border border-black text-xs font-bold text-black uppercase tracking-tight">{error}</div>
           )}
 
           {/* Folder picker */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-slate-400">Pasta do Bizagi (exportação)</label>
+            <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500">Pasta do Bizagi (exportação)</label>
             <div className="relative">
               <input
                 ref={inputRef}
@@ -221,11 +221,11 @@ export default function ImportFlowDialog({ open, onClose, tree, onCreated }: Imp
                 webkitdirectory=""
                 directory=""
                 onChange={handleFolderSelect}
-                className="w-full text-sm text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-slate-800 file:text-slate-300 hover:file:bg-slate-700 file:cursor-pointer file:transition-colors"
+                className="w-full text-xs text-black file:mr-3 file:py-2 file:px-4 file:border file:border-black file:text-[10px] file:font-black file:uppercase file:bg-white file:text-black hover:file:bg-black hover:file:text-white file:cursor-pointer file:transition-colors"
               />
             </div>
             {folderName && (
-              <div className="flex items-center gap-2 text-xs text-slate-500">
+              <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-tight">
                 <FolderOpen className="w-3 h-3" />
                 <span>{folderName}</span>
               </div>
@@ -234,16 +234,17 @@ export default function ImportFlowDialog({ open, onClose, tree, onCreated }: Imp
 
           {/* Destination folder */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-slate-400">Pasta de destino</label>
+            <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500">Pasta de destino</label>
             <select
               value={folderId}
               onChange={(e) => setFolderId(e.target.value)}
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-md text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-colors"
+              className="w-full px-3 py-2 bg-white border border-black rounded-none text-xs text-black font-medium focus:outline-none focus:ring-0 transition-colors appearance-none"
+              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.75rem center', backgroundSize: '1rem' }}
             >
               <option value="">Selecione uma pasta...</option>
               {folders.map((f) => (
                 <option key={f.id} value={f.id}>
-                  {"—".repeat(f.depth)} {f.name}
+                  {"  ".repeat(f.depth)} {f.name}
                 </option>
               ))}
             </select>
@@ -251,9 +252,9 @@ export default function ImportFlowDialog({ open, onClose, tree, onCreated }: Imp
 
           {/* Loading spinner for parsing */}
           {parsing && (
-            <div className="flex items-center justify-center gap-2 py-4 text-slate-400">
-              <Loader2 className="w-4 h-4 animate-spin" />
-              <span className="text-sm">Processando pasta...</span>
+            <div className="flex items-center justify-center gap-2 py-4 border border-black border-dashed">
+              <Loader2 className="w-4 h-4 animate-spin text-black" />
+              <span className="text-[10px] font-black uppercase tracking-widest">Processando pasta...</span>
             </div>
           )}
 
@@ -261,44 +262,43 @@ export default function ImportFlowDialog({ open, onClose, tree, onCreated }: Imp
           {diagrams.length > 0 && (
             <div className="flex-1 flex flex-col min-h-0">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-slate-400">
+                <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">
                   Diagramas encontrados ({selectedCount}/{diagrams.length})
                 </span>
-                <div className="flex gap-2 text-xs">
-                  <button onClick={selectAll} className="text-blue-400 hover:text-blue-300 transition-colors">
+                <div className="flex gap-3 text-[10px] font-black uppercase tracking-widest">
+                  <button onClick={selectAll} className="text-black hover:underline">
                     Todos
                   </button>
-                  <span className="text-slate-700">|</span>
-                  <button onClick={selectNone} className="text-slate-500 hover:text-slate-300 transition-colors">
+                  <button onClick={selectNone} className="text-gray-400 hover:text-black">
                     Nenhum
                   </button>
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto space-y-1 max-h-[200px] border border-slate-800 rounded-md p-2 bg-slate-800/30">
+              <div className="flex-1 overflow-y-auto space-y-px border border-black p-1 bg-gray-50">
                 {diagrams.map((d, i) => (
                   <label
                     key={i}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
-                      d.selected ? "bg-blue-600/10 border border-blue-500/20" : "hover:bg-slate-800 border border-transparent"
+                    className={`flex items-center gap-3 px-3 py-2 cursor-pointer transition-colors border ${
+                      d.selected ? "bg-black border-black text-white" : "hover:bg-white border-transparent text-black"
                     }`}
                   >
                     <div
-                      className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                      className={`w-4 h-4 border flex items-center justify-center shrink-0 transition-colors ${
                         d.selected
-                          ? "bg-blue-600 border-blue-500"
-                          : "border-slate-600 bg-slate-800"
+                          ? "bg-white border-white"
+                          : "border-black bg-white"
                       }`}
                     >
-                      {d.selected && <Check className="w-3 h-3 text-white" />}
+                      {d.selected && <Check className="w-3 h-3 text-black" />}
                     </div>
-                    <FileText className={`w-4 h-4 shrink-0 ${d.selected ? "text-blue-400" : "text-slate-500"}`} />
+                    <FileText className={`w-4 h-4 shrink-0 ${d.selected ? "text-white" : "text-black"}`} />
                     <div className="flex-1 min-w-0">
-                      <div className={`text-sm truncate font-medium ${d.selected ? "text-slate-200" : "text-slate-400"}`}>
+                      <div className={`text-[11px] truncate font-bold uppercase tracking-tight`}>
                         {d.name}
                       </div>
-                      <div className="text-[10px] text-slate-600 truncate">
-                        {d.svgFile ? `✓ SVG: ${d.svgFileName}` : `⚠ SVG não encontrado: ${d.svgFileName}`}
+                      <div className={`text-[9px] truncate uppercase tracking-tighter ${d.selected ? "text-gray-400" : "text-gray-500"}`}>
+                        {d.svgFile ? `✓ SVG PRONTO` : `⚠ SVG AUSENTE`}
                       </div>
                     </div>
                     <input
@@ -314,14 +314,14 @@ export default function ImportFlowDialog({ open, onClose, tree, onCreated }: Imp
           )}
 
           {/* Action buttons */}
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={handleClose} className="flex-1 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium rounded-md transition-colors">
+          <div className="flex gap-3 pt-4 border-t border-black">
+            <button type="button" onClick={handleClose} className="flex-1 px-4 py-3 bg-white border border-black text-black text-[10px] font-black uppercase tracking-widest hover:bg-gray-100 transition-colors">
               Cancelar
             </button>
             <button
               onClick={handleImport}
               disabled={loading || selectedCount === 0 || !folderId}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-sm font-medium rounded-md transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-black border border-black text-white text-[10px] font-black uppercase tracking-widest disabled:opacity-30 hover:bg-gray-900 transition-colors"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
               Importar {selectedCount > 0 ? `(${selectedCount})` : ""}

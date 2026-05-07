@@ -5,12 +5,30 @@ import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { Loader2, LogIn, AlertCircle } from "lucide-react";
 
+import { useAuth } from "@/lib/auth";
+import { useEffect } from "react";
+
 export default function LoginPage() {
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.replace("/");
+    }
+  }, [user, authLoading, router]);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center font-bold uppercase text-[10px] tracking-widest text-black">
+        Carregando...
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,33 +44,30 @@ export default function LoginPage() {
       setError(error.message);
       setLoading(false);
     } else {
-      router.push("/dashboard");
+      router.push("/");
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent italic mb-2">
-            EPO
-          </h1>
-          <p className="text-sm text-slate-500">Acesso administrativo</p>
+    <div className="min-h-screen bg-white flex flex-col items-center pt-20 p-4">
+      <div className="mb-8 flex flex-col items-center">
+        <img src="/logo-epo.png" alt="EPO Logo" className="h-64 w-auto object-contain" />
+      </div>
+      
+      <div className="w-full max-w-sm border border-black p-8 bg-white">
+        <div className="mb-8">
+          <p className="text-sm font-bold uppercase tracking-tight text-black">Acesso Administrativo</p>
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="bg-slate-900 border border-slate-800 rounded-lg p-6 space-y-5"
-        >
+        <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-md text-sm text-red-400">
-              <AlertCircle className="w-4 h-4 shrink-0" />
+            <div className="p-3 border border-red-600 text-sm text-red-600 bg-red-50">
               {error}
             </div>
           )}
 
-          <div className="space-y-2">
-            <label htmlFor="email" className="block text-sm font-medium text-slate-400">
+          <div className="space-y-1">
+            <label htmlFor="email" className="block text-sm font-bold uppercase">
               Email
             </label>
             <input
@@ -61,13 +76,12 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              placeholder="admin@exemplo.com"
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-md text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/40 transition-colors"
+              className="w-full px-3 py-2 border border-black text-sm focus:outline-none"
             />
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="password" className="block text-sm font-medium text-slate-400">
+          <div className="space-y-1">
+            <label htmlFor="password" className="block text-sm font-bold uppercase">
               Senha
             </label>
             <input
@@ -76,27 +90,21 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              placeholder="••••••••"
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-md text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/40 transition-colors"
+              className="w-full px-3 py-2 border border-black text-sm focus:outline-none"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:hover:bg-blue-600 text-white text-sm font-medium rounded-md transition-colors"
+            className="w-full py-2 bg-black text-white text-sm font-bold uppercase hover:bg-gray-800 disabled:bg-gray-400 transition-colors"
           >
-            {loading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <LogIn className="w-4 h-4" />
-            )}
-            Entrar
+            {loading ? "Carregando..." : "Entrar"}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-xs text-slate-600">
-          Acesso restrito a administradores do sistema.
+        <p className="mt-8 text-center text-[10px] text-gray-500 uppercase tracking-widest">
+          Acesso Restrito
         </p>
       </div>
     </div>

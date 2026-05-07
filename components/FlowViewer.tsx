@@ -4,24 +4,16 @@ import React, { useState, useCallback, useEffect } from "react";
 import {
   ReactFlow,
   Controls,
-  MiniMap,
   Background,
   useNodesState,
   NodeMouseHandler,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { AlignLeft, Info } from "lucide-react";
+import { AlignLeft, Info, X } from "lucide-react";
 
 import DiagramBackgroundNode, { DiagramBackgroundNodeType } from "./DiagramBackgroundNode";
 import HotspotNode, { HotspotNodeType } from "./HotspotNode";
 import type { Flow } from "@/lib/types";
-
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
 
 const nodeTypes = {
   diagramBackground: DiagramBackgroundNode,
@@ -133,7 +125,7 @@ export default function FlowViewer({ flow }: FlowViewerProps) {
   }, []);
 
   return (
-    <div className="w-full h-full bg-slate-50">
+    <div className="w-full h-full bg-white">
       <ReactFlow
         nodes={nodes}
         onNodesChange={onNodesChange}
@@ -144,40 +136,61 @@ export default function FlowViewer({ flow }: FlowViewerProps) {
         maxZoom={2}
       >
         <Background />
-        <MiniMap />
         <Controls className="pb-2" />
       </ReactFlow>
 
-      <Sheet open={!!selectedNodeData} onOpenChange={(open) => !open && setSelectedNodeData(null)}>
-        <SheetContent className="sm:max-w-[450px] overflow-y-auto bg-slate-950 border-l border-slate-800 text-slate-300">
-          <SheetHeader className="mb-6">
-            <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-2">
-              <Info className="w-4 h-4" /> Detalhes da Etapa
-            </h2>
-            <SheetTitle className="text-xl font-bold text-slate-100">
-              {selectedNodeData?.name || "Sem título"}
-            </SheetTitle>
-          </SheetHeader>
-          
-          <div className="space-y-6">
-            {/* Description Section */}
-            <section className="space-y-3">
-              <div className="flex items-center gap-2 text-sm font-medium text-slate-400">
-                <AlignLeft className="w-4 h-4" />
-                Descrição
+      {/* Modal */}
+      {selectedNodeData && (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" 
+            onClick={() => setSelectedNodeData(null)}
+          />
+          <div className="relative bg-white border border-black p-8 w-full max-w-2xl shadow-none flex flex-col max-h-[90vh]">
+            <button 
+              onClick={() => setSelectedNodeData(null)}
+              className="absolute right-4 top-4 p-1 hover:bg-gray-100 text-black transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            <header className="mb-8 border-b border-black pb-4">
+              <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">
+                <Info className="w-4 h-4" /> Informações do Elemento
               </div>
-              {selectedNodeData?.description ? (
-                <div
-                  className="text-sm leading-relaxed [&_*]:!text-slate-300 [&_span]:!text-slate-300 [&_p]:!text-slate-300 text-slate-300"
-                  dangerouslySetInnerHTML={{ __html: selectedNodeData.description }}
-                />
-              ) : (
-                <p className="text-sm text-slate-500 italic">Nenhuma descrição detalhada disponível.</p>
-              )}
-            </section>
+              <h2 className="text-3xl font-black text-black uppercase tracking-tighter leading-none">
+                {selectedNodeData.name || "Sem título"}
+              </h2>
+            </header>
+            
+            <div className="flex-1 overflow-y-auto custom-scrollbar">
+              <section className="space-y-4">
+                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-black bg-gray-100 inline-flex px-2 py-1">
+                  <AlignLeft className="w-4 h-4" />
+                  Descrição Detalhada
+                </div>
+                {selectedNodeData.description ? (
+                  <div
+                    className="text-base leading-relaxed text-black prose prose-sm max-w-none"
+                    dangerouslySetInnerHTML={{ __html: selectedNodeData.description }}
+                  />
+                ) : (
+                  <p className="text-sm text-gray-400 italic">Nenhuma descrição disponível para este elemento.</p>
+                )}
+              </section>
+            </div>
+
+            <footer className="mt-8 pt-4 border-t border-black flex justify-end">
+              <button 
+                onClick={() => setSelectedNodeData(null)}
+                className="px-6 py-2 bg-black text-white text-[10px] font-black uppercase tracking-widest hover:bg-gray-800 transition-colors"
+              >
+                Fechar
+              </button>
+            </footer>
           </div>
-        </SheetContent>
-      </Sheet>
+        </div>
+      )}
     </div>
   );
 }
