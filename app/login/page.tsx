@@ -51,7 +51,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center pt-20 p-4">
       <div className="mb-8 flex flex-col items-center">
-        <img src="/logo-epo.png" alt="EPO Logo" className="h-64 w-auto object-contain" />
+        <img src="/brasão_tjpb.png" alt="Brasão TJPB" className="h-64 w-auto object-contain" />
       </div>
       
       <div className="w-full max-w-sm border border-black p-8 bg-white">
